@@ -1,5 +1,7 @@
 # SafeWave-AI ESP32-S3 CSI 펌웨어
 
+[![build](https://github.com/composedly13/safewave-ai-ambient-monitoring-firmware/actions/workflows/build.yml/badge.svg)](https://github.com/composedly13/safewave-ai-ambient-monitoring-firmware/actions/workflows/build.yml)
+
 ESP32-S3가 WiFi CSI(Channel State Information)를 수집·전처리하여 **788바이트 고정 UDP 패킷**을
 라즈베리파이 `sensing` 서비스로 **100 Hz** 송신하는 센서 노드 펌웨어입니다.
 대역분리(Butterworth 2밴드)까지 펌웨어가 처리하며, RPi는 받은 데이터를 그대로 추론에 사용합니다.
