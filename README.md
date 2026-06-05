@@ -22,13 +22,14 @@ ESP32-S3가 WiFi CSI(Channel State Information)를 수집·전처리하여 **788
 
 ## 빌드 & 플래시
 
-### 1. 필터 계수 생성 (필수)
+### 1. 필터 계수 (이미 생성·커밋됨)
 
-`src/biquad_coeffs.h`는 placeholder(전부 0) 상태입니다. 빌드 전 반드시 생성하세요.
+`src/biquad_coeffs.h`에 Butterworth 계수가 이미 들어 있어 **바로 빌드됩니다.**
+필터 대역을 바꿀 때만 재생성하세요 (파일 인자 형식 — Windows/PowerShell 안전):
 
 ```bash
 pip install scipy numpy
-python tools/gen_sos.py > src/biquad_coeffs.h
+python tools/gen_sos.py src/biquad_coeffs.h
 ```
 
 ### 2. 설정 편집
