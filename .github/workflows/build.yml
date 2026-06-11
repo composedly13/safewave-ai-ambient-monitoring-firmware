@@ -28,6 +28,6 @@ jobs:
       - name: Install PlatformIO
         run: pip install --upgrade platformio
 
-      # node1..node6 differ only by -DNODE_ID, so building node1 proves them all.
+      # node1..node5 differ only by -DNODE_ID, so building node1 proves them all.
       - name: Build node1
         run: pio run -e node1

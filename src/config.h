@@ -13,7 +13,7 @@
 #define DUMMY_TRIGGER_PORT  5006              // dummy UDP port on gateway
 
 // ─── Node identity ──────────────────────────────────────────────────────
-// Overridable at build time via -DNODE_ID=n (PlatformIO env node1..node6,
+// Overridable at build time via -DNODE_ID=n (PlatformIO env node1..node5,
 // see platformio.ini). Falls back to 1 when not injected.
 #ifndef NODE_ID
 #define NODE_ID             1

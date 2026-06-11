@@ -11,7 +11,7 @@
 | Offset | 필드 | 타입 | Bytes |
 |---:|---|---|---:|
 | 0 | magic `"CSI!"` | char[4] | 4 |
-| 4 | node_id (1~6) | uint8 | 1 |
+| 4 | node_id (1~5) | uint8 | 1 |
 | 5 | reserved | uint8 | 1 |
 | 6 | n_samples (64) | uint16 | 2 |
 | 8 | seq_num | uint32 | 4 |
@@ -48,7 +48,7 @@ ESP 송신 rate  ==  RPi CSI_FS 환경변수  ==  M2 ONNX 학습 fs
 | 전송 | **HTTP POST** (`/csi/log`) | **UDP :5005** |
 | cadence | **20 Hz** (`<50ms`) | **100 Hz** (`<10ms`) |
 | 패킷 | `<4s8sIIi64f>` = **280B**, 단일 64f | `<4sBBHIIhH192f>` = **788B**, 3블록 |
-| node_id | 8바이트 **문자열** | uint8 (1~6) |
+| node_id | 8바이트 **문자열** | uint8 (1~5) |
 | rssi | int32 | int16 |
 | 전처리 | **없음** (raw amplitude) | peak 정규화 + Butterworth 2밴드 |
 
