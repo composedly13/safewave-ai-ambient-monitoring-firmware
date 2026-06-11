@@ -6,11 +6,12 @@
 // ═══════════════════════════════════════════════════════════════════════
 
 // ─── Network ────────────────────────────────────────────────────────────
-#define WIFI_SSID           "YOUR_SSID"       // TODO: set before flash
-#define WIFI_PASSWORD       "YOUR_PASS"       // TODO: set before flash
-#define TARGET_IP           "192.168.1.100"   // TODO: RPi sensing host
+// ipTIME AX2004T subnet 192.168.1.0/24, gateway 192.168.1.1 (auto-derived).
+#define WIFI_SSID           "YOUR_2G_SSID"    // TODO: ipTIME 2.4GHz SSID (ESP32-S3 is 2.4GHz only)
+#define WIFI_PASSWORD       "YOUR_PASS"       // TODO: set before flash (do NOT commit the real value)
+#define TARGET_IP           "192.168.1.11"    // rohjinsan (노진산) — receiver host
 #define TARGET_PORT         5005
-#define DUMMY_TRIGGER_PORT  5006              // dummy UDP port on gateway
+#define DUMMY_TRIGGER_PORT  5006              // dummy UDP port on gateway (192.168.1.1)
 
 // ─── Node identity ──────────────────────────────────────────────────────
 // Overridable at build time via -DNODE_ID=n (PlatformIO env node1..node5,
