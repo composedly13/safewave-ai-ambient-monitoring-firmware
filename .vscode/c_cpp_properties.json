@@ -12,7 +12,7 @@
                 "C:/Users/compo/.platformio/packages/framework-espidf/components/xtensa/esp32s3/include",
                 "C:/Users/compo/.platformio/packages/framework-espidf/components/xtensa/include",
                 "C:/Users/compo/.platformio/packages/framework-espidf/components/xtensa/deprecated_include",
-                "D:/safewave-ai-ambient-monitoring-firmware/.pio/build/node1/config",
+                "D:/safewave-ai-ambient-monitoring-firmware/.pio/build/node2/config",
                 "C:/Users/compo/.platformio/packages/framework-espidf/components/esp_libc/platform_include",
                 "C:/Users/compo/.platformio/packages/framework-espidf/components/freertos/config/include",
                 "C:/Users/compo/.platformio/packages/framework-espidf/components/freertos/config/include/freertos",
@@ -249,7 +249,7 @@
                     "C:/Users/compo/.platformio/packages/framework-espidf/components/xtensa/esp32s3/include",
                     "C:/Users/compo/.platformio/packages/framework-espidf/components/xtensa/include",
                     "C:/Users/compo/.platformio/packages/framework-espidf/components/xtensa/deprecated_include",
-                    "D:/safewave-ai-ambient-monitoring-firmware/.pio/build/node1/config",
+                    "D:/safewave-ai-ambient-monitoring-firmware/.pio/build/node2/config",
                     "C:/Users/compo/.platformio/packages/framework-espidf/components/esp_libc/platform_include",
                     "C:/Users/compo/.platformio/packages/framework-espidf/components/freertos/config/include",
                     "C:/Users/compo/.platformio/packages/framework-espidf/components/freertos/config/include/freertos",
@@ -495,14 +495,14 @@
                 "ARDUINO_RUNNING_CORE=1",
                 "ARDUINO_EVENT_RUNNING_CORE=1",
                 "BOARD_HAS_PSRAM",
-                "NODE_ID=1",
+                "NODE_ID=2",
                 ""
             ],
             "cStandard": "gnu23",
             "cppStandard": "gnu++26",
             "compilerPath": "C:/Users/compo/.platformio/packages/toolchain-xtensa-esp-elf/bin/xtensa-esp32s3-elf-gcc.exe",
             "compilerArgs": [
-                "@D:/safewave-ai-ambient-monitoring-firmware/.pio/build/node1/toolchain/cflags",
+                "@D:/safewave-ai-ambient-monitoring-firmware/.pio/build/node2/toolchain/cflags",
                 ""
             ]
         }

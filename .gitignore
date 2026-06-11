@@ -12,6 +12,9 @@ build/
 # Uncomment below if you prefer to gitignore the generated header:
 # src/biquad_coeffs.h
 
+# Secrets — WiFi credentials (keep out of this public repo)
+src/secrets.h
+
 # IDE
 .vscode/settings.json
 .idea/

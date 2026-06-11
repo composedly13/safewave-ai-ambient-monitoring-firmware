@@ -7,8 +7,21 @@
 
 // ─── Network ────────────────────────────────────────────────────────────
 // ipTIME AX2004T subnet 192.168.1.0/24, gateway 192.168.1.1 (auto-derived).
-#define WIFI_SSID           "YOUR_2G_SSID"    // TODO: ipTIME 2.4GHz SSID (ESP32-S3 is 2.4GHz only)
-#define WIFI_PASSWORD       "YOUR_PASS"       // TODO: set before flash (do NOT commit the real value)
+//
+// WiFi credentials live in secrets.h (gitignored) so the password never hits
+// this public repo. Copy secrets.example.h -> secrets.h and fill it before
+// flashing. If secrets.h is absent (CI / fresh clone) the placeholders below
+// are used so the build still succeeds.
+#if __has_include("secrets.h")
+#include "secrets.h"
+#endif
+#ifndef WIFI_SSID
+#define WIFI_SSID       "YOUR_2G_SSID"   // ipTIME 2.4GHz SSID (ESP32-S3 is 2.4GHz only)
+#endif
+#ifndef WIFI_PASSWORD
+#define WIFI_PASSWORD   "YOUR_PASS"
+#endif
+
 #define TARGET_IP           "192.168.1.11"    // rohjinsan (노진산) — receiver host
 #define TARGET_PORT         5005
 // CSI cadence is driven by ICMP echo to the gateway (see net.c net_ping_send);
