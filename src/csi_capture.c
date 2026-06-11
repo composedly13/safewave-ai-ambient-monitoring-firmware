@@ -22,6 +22,15 @@ static void csi_rx_cb(void *ctx, wifi_csi_info_t *info)
 {
     if (!info || !info->buf || info->len < 2) return;
 
+    // One-time: report the real buffer length so the sub-carrier mapping
+    // assumption (expect len=128 → 64 I/Q pairs) is verifiable in the field.
+    static bool s_logged_len = false;
+    if (!s_logged_len) {
+        s_logged_len = true;
+        ESP_LOGI(TAG, "first CSI: info->len=%d (%d pairs, expect 128/64)",
+                 info->len, info->len / 2);
+    }
+
     // ASSUMPTION: buf is int8 I/Q pairs in sub-carrier index order.
     //
     // HT20 LLTF layout (802.11-2016, §21.3.7.5):

@@ -66,6 +66,11 @@ static void wifi_init(void)
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wc));
     ESP_ERROR_CHECK(esp_wifi_start());
 
+    // CSI cadence: disable modem-sleep power save. Default WIFI_PS_MIN_MODEM
+    // sleeps between beacons → irregular/throttled CSI callbacks, starving the
+    // 100 Hz loop. WIFI_PS_NONE keeps the radio awake for steady CSI delivery.
+    ESP_ERROR_CHECK(esp_wifi_set_ps(WIFI_PS_NONE));
+
     ESP_LOGI(TAG, "Connecting to \"%s\" ...", WIFI_SSID);
     xEventGroupWaitBits(s_wifi_eg, WIFI_CONNECTED_BIT,
                         pdFALSE, pdTRUE, portMAX_DELAY);
