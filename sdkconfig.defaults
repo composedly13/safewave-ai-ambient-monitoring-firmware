@@ -20,8 +20,10 @@ CONFIG_ESPTOOLPY_FLASHSIZE="16MB"
 # FreeRTOS — 1 ms tick so 10 ms send period is exact
 CONFIG_FREERTOS_HZ=1000
 
-# WiFi CSI — required for esp_wifi_set_csi_rx_cb
-CONFIG_ESP_WIFI_ENABLE_WIFI_CSI=y
+# WiFi CSI — required for esp_wifi_set_csi_config / rx_cb.
+# Correct Kconfig symbol for ESP-IDF 6.0.1 (the old CONFIG_ESP_WIFI_ENABLE_WIFI_CSI
+# name was silently ignored → CSI not built in → set_csi_config returned ESP_FAIL).
+CONFIG_ESP_WIFI_CSI_ENABLED=y
 
 # LWIP
 CONFIG_LWIP_UDP_RECVMBOX_SIZE=16

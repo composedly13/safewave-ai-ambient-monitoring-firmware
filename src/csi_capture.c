@@ -66,12 +66,19 @@ static void csi_rx_cb(void *ctx, wifi_csi_info_t *info)
 
 esp_err_t csi_capture_init(void)
 {
+    // Proven config from the reference collector (AI_HACK_CAMP_2026_CSI).
+    // The previous LLTF-only set had htltf_en=false WITH ltf_merge_en=true,
+    // which is self-contradictory — IDF 6.0.1 rejected it and
+    // esp_wifi_set_csi_config() returned ESP_FAIL (boot loop). Enabling HT-LTF
+    // makes the merge valid. The rx callback still takes only the first
+    // CSI_N_CH (64) amplitudes; check the one-time info->len log for the real
+    // count on this AP (HT40 may report more).
     wifi_csi_config_t cfg = {
         .lltf_en           = true,
-        .htltf_en          = false,   // LLTF only — 64 sub-carriers
-        .stbc_htltf2_en    = false,
+        .htltf_en          = true,
+        .stbc_htltf2_en    = true,
         .ltf_merge_en      = true,
-        .channel_filter_en = false,   // raw per-sub-carrier (no adjacent smoothing)
+        .channel_filter_en = false,
         .manu_scale        = false,
         .shift             = 0,
     };
