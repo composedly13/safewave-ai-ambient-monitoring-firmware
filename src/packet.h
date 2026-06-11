@@ -10,7 +10,7 @@
 //
 // Offset  Field          Type       Bytes  Description
 //    0    magic[4]       char[4]       4   "CSI!" — discard if mismatch
-//    4    node_id        uint8         1   1..6
+//    4    node_id        uint8         1   1..5
 //    5    reserved       uint8         1   = 0
 //    6    n_samples      uint16        2   = CSI_N_CH (64)
 //    8    seq_num        uint32        4   monotonic counter

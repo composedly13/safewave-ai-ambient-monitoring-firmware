@@ -1,6 +1,6 @@
 # FLASHING — 펌웨어 굽는 절차 명세
 
-ESP32-S3-N16R8 6노드 현장 플래시 절차. 위에서 아래로 순서대로 따라가면 된다.
+ESP32-S3-N16R8 5노드 현장 플래시 절차. 위에서 아래로 순서대로 따라가면 된다.
 
 > 전제: 코드/계수는 이미 빌드 가능 상태로 커밋됨. **현장에서 새로 짤 코드는 없다.**
 > WiFi 정보 입력 → 노드별 굽기 → 시리얼 로그 확인, 이 3단계가 전부.
@@ -11,7 +11,7 @@ ESP32-S3-N16R8 6노드 현장 플래시 절차. 위에서 아래로 순서대로
 
 | 항목 | 확인 |
 |---|---|
-| ESP32-S3-N16R8 보드 ×6 | OTG/데이터용 USB 케이블 (충전 전용 X) |
+| ESP32-S3-N16R8 보드 ×5 | OTG/데이터용 USB 케이블 (충전 전용 X) |
 | PC 도구 | Python 3.11, PlatformIO 6.x, VS Code — 이미 설치됨 |
 | USB 드라이버 | CP210x 또는 CH343 (보드 USB-UART 칩에 맞게) |
 | AP/네트워크 | 2.4GHz WiFi, RPi `sensing` 호스트 IP |
@@ -44,7 +44,7 @@ python tools/gen_sos.py src/biquad_coeffs.h    # 파일 인자 형식 (PowerShel
 // CSI_FS 100 은 그대로 (RPi/M2와 3자 일치 — 건드리지 말 것)
 ```
 
-> `NODE_ID`는 여기서 **안 건드린다.** 빌드 env(`node1`~`node6`)가 자동 주입.
+> `NODE_ID`는 여기서 **안 건드린다.** 빌드 env(`node1`~`node5`)가 자동 주입.
 
 ---
 
@@ -77,7 +77,7 @@ pio run -e node3 -t upload --upload-port COM7
 | 1번 | node1 | `pio run -e node1 -t upload --upload-port COMx` |
 | 2번 | node2 | `pio run -e node2 -t upload --upload-port COMx` |
 | … | … | … |
-| 6번 | node6 | `pio run -e node6 -t upload --upload-port COMx` |
+| 5번 | node5 | `pio run -e node5 -t upload --upload-port COMx` |
 
 > **주의:** 같은 NODE_ID로 두 보드를 굽지 말 것. env를 다르게 = NODE_ID가 다르게.
 > 펌웨어 바이너리는 NODE_ID만 다르므로 빌드는 빠름(프레임워크 캐시).

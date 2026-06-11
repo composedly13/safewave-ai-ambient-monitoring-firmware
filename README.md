@@ -45,12 +45,12 @@ python tools/gen_sos.py src/biquad_coeffs.h
 #define CSI_FS        100               // RPi CSI_FS / M2 학습 fs와 일치 필수
 ```
 
-> `NODE_ID`는 `config.h`에서 손대지 않습니다. 빌드 env(`node1`~`node6`)가
+> `NODE_ID`는 `config.h`에서 손대지 않습니다. 빌드 env(`node1`~`node5`)가
 > `-DNODE_ID=n`으로 주입합니다 (아래 참조).
 
 ### 3. 빌드 및 업로드 (노드별)
 
-노드 6개는 각각 `node1`~`node6` env로 빌드합니다. **COM 번호는 NODE_ID와 무관**하며,
+노드 5개는 각각 `node1`~`node5` env로 빌드합니다. **COM 번호는 NODE_ID와 무관**하며,
 그 보드가 USB에 꽂힌 포트일 뿐입니다.
 
 ```bash
@@ -60,7 +60,7 @@ pio device monitor -e node3 --port COM7           # 시리얼 로그 (115200)
 ```
 
 보드 한 개씩: `포트 확인 → 노드 번호 결정 → 해당 env로 업로드 → 보드에 번호 라벨`.
-`pio run` (env 생략)은 6개 전부 빌드합니다.
+`pio run` (env 생략)은 5개 전부 빌드합니다.
 
 ## 설정 (config.h)
 
@@ -68,7 +68,7 @@ pio device monitor -e node3 --port COM7           # 시리얼 로그 (115200)
 |---|---|---|
 | `WIFI_SSID` / `WIFI_PASSWORD` | — | AP 접속 정보 |
 | `TARGET_IP` / `TARGET_PORT` | `192.168.1.100` / `5005` | RPi sensing 목적지 |
-| `NODE_ID` | `1` | 노드 번호 1~6 — 빌드 env가 `-DNODE_ID`로 주입 (config.h 수정 X) |
+| `NODE_ID` | `1` | 노드 번호 1~5 — 빌드 env가 `-DNODE_ID`로 주입 (config.h 수정 X) |
 | `CSI_FS` | `100` | 샘플링 레이트(Hz) — RPi·M2와 3자 일치 |
 | `CSI_N_CH` | `64` | 서브캐리어 채널 수 |
 
@@ -82,7 +82,7 @@ Python 대응: `struct.Struct("<4sBBHIIhH192f")`
 | Offset | 필드 | 타입 | Bytes | 설명 |
 |---:|---|---|---:|---|
 | 0 | `magic` | `char[4]` | 4 | `"CSI!"` |
-| 4 | `node_id` | `uint8` | 1 | 1~6 |
+| 4 | `node_id` | `uint8` | 1 | 1~5 |
 | 5 | `reserved` | `uint8` | 1 | 0 |
 | 6 | `n_samples` | `uint16` | 2 | 64 |
 | 8 | `seq_num` | `uint32` | 4 | 송신 카운터 |

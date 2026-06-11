@@ -4,7 +4,7 @@
 
 ---
 
-## 2026-06-05 · 빌드 정비 · 6노드 · N16R8 · CI
+## 2026-06-05 · 빌드 정비 · 5노드 · N16R8 · CI
 
 스캐폴드(`de749bb`)는 코드가 사실상 완성 상태였고, 이날 **"현장에서 굽기만 하면 되는 상태"** 로 다듬음.
 
@@ -16,9 +16,10 @@
   - `python tools/gen_sos.py src/biquad_coeffs.h`  ← 권장 (크로스플랫폼 안전)
 - `src/biquad_coeffs.h` 에 실제 Butterworth SOS 계수 생성·커밋 (resp 0.1–0.6Hz / heart 0.8–3.0Hz, fs=100, 4 sections). 이제 **clone 후 바로 빌드** 가능.
 
-### 2. 6노드 빌드 분리
+### 2. 5노드 빌드 분리
 - `config.h`: `#define NODE_ID 1` → `#ifndef NODE_ID` 가드 (빌드 인자 우선)
-- `platformio.ini`: 공통 `[env]` + `node1`~`node6`, 각 `-DNODE_ID=n` 주입
+- `platformio.ini`: 공통 `[env]` + `node1`~`node5`, 각 `-DNODE_ID=n` 주입
+  - (초기 `node6`까지 6개로 만들었으나 현장 보드 5개에 맞춰 축소)
 - **config.h를 손으로 6번 고칠 필요 없음** → 중복 NODE_ID 사고 방지
 - 플래시: `pio run -e node3 -t upload --upload-port COM7`
 - **COM 번호는 NODE_ID와 무관** (보드가 꽂힌 포트일 뿐)
