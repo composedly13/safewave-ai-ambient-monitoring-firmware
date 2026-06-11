@@ -10,6 +10,8 @@
 #include "freertos/task.h"
 #include "esp_log.h"
 #include "esp_netif.h"
+#include "lwip/icmp.h"
+#include "lwip/inet_chksum.h"
 
 #include "config.h"
 #include "packet.h"
@@ -19,9 +21,11 @@
 
 static const char *TAG = "net";
 
-static int                s_sock   = -1;
-static struct sockaddr_in s_target;   // RPi sensing service
-static struct sockaddr_in s_dummy;    // gateway dummy trigger
+static int                s_sock      = -1;   // UDP data socket → RPi
+static int                s_ping_sock = -1;   // raw ICMP socket → gateway (CSI trigger)
+static struct sockaddr_in s_target;            // RPi sensing service
+static struct sockaddr_in s_ping_dst;          // gateway (ICMP echo target)
+static uint16_t           s_ping_seq  = 0;
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -46,11 +50,34 @@ static void peak_normalize(const float *in, float *out)
     }
 }
 
-// 1-byte UDP to gateway — keeps AP TX active so CSI callbacks keep firing.
-static void net_dummy_send(void)
+// One ICMP echo request to the gateway per tick. The echo *reply* is an
+// AP→STA unicast frame, so every reply drives exactly one fresh CSI callback —
+// a deterministic ~100 Hz CSI cadence.
+//
+// Why not the old closed-UDP-port "dummy" trick: a UDP datagram to a dead port
+// elicits only an ICMP port-unreachable, which routers rate-limit to ~1/s.
+// That starved CSI to <1% fresh frames (drops ≈ 100%). Echo *replies* are not
+// rate-limited, so ping restores the full rate.
+static void net_ping_send(void)
 {
-    static const uint8_t d = 0;
-    sendto(s_sock, &d, 1, 0, (struct sockaddr *)&s_dummy, sizeof(s_dummy));
+    uint8_t pkt[sizeof(struct icmp_echo_hdr) + 8];
+    struct icmp_echo_hdr *icmp = (struct icmp_echo_hdr *)pkt;
+
+    ICMPH_TYPE_SET(icmp, ICMP_ECHO);
+    ICMPH_CODE_SET(icmp, 0);
+    icmp->chksum = 0;
+    icmp->id     = htons(0xC51A);                  // arbitrary session id
+    icmp->seqno  = htons(s_ping_seq++);
+    memset(pkt + sizeof(struct icmp_echo_hdr), 0xA5, 8);
+    icmp->chksum = inet_chksum(pkt, sizeof(pkt));  // S3 has no ICMP HW checksum
+
+    sendto(s_ping_sock, pkt, sizeof(pkt), 0,
+           (struct sockaddr *)&s_ping_dst, sizeof(s_ping_dst));
+
+    // Drain replies so the raw-PCB mailbox can't back up. CSI is generated at
+    // PHY RX (before lwIP), so the echo-reply payload itself is not needed.
+    uint8_t scratch[64];
+    while (recv(s_ping_sock, scratch, sizeof(scratch), 0) > 0) { }
 }
 
 // ─── Init ───────────────────────────────────────────────────────────────────
@@ -73,18 +100,28 @@ esp_err_t net_init(void)
     s_target.sin_port        = htons(TARGET_PORT);
     s_target.sin_addr.s_addr = inet_addr(TARGET_IP);
 
-    // Gateway dummy — derive from DHCP-assigned IP info (no hardcode needed)
+    // Raw ICMP socket → gateway, used as the per-tick CSI trigger (echo reply
+    // = one AP→STA frame = one CSI callback).
+    s_ping_sock = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
+    if (s_ping_sock < 0) {
+        ESP_LOGE(TAG, "raw ICMP socket() failed: errno=%d", errno);
+        return ESP_FAIL;
+    }
+    fl = fcntl(s_ping_sock, F_GETFL, 0);
+    fcntl(s_ping_sock, F_SETFL, fl | O_NONBLOCK);
+
+    // Gateway address — derive from DHCP-assigned IP info (no hardcode needed)
     esp_netif_t *ni = esp_netif_get_default_netif();
     esp_netif_ip_info_t ip;
     ESP_ERROR_CHECK(esp_netif_get_ip_info(ni, &ip));
 
-    memset(&s_dummy, 0, sizeof(s_dummy));
-    s_dummy.sin_family      = AF_INET;
-    s_dummy.sin_port        = htons(DUMMY_TRIGGER_PORT);
-    s_dummy.sin_addr.s_addr = ip.gw.addr;   // already network byte order
+    memset(&s_ping_dst, 0, sizeof(s_ping_dst));
+    s_ping_dst.sin_family      = AF_INET;
+    s_ping_dst.sin_addr.s_addr = ip.gw.addr;   // already network byte order
+                                               // (port unused for ICMP)
 
-    ESP_LOGI(TAG, "UDP ready → RPi=" TARGET_IP ":%d  dummy→" IPSTR ":%d",
-             TARGET_PORT, IP2STR(&ip.gw), DUMMY_TRIGGER_PORT);
+    ESP_LOGI(TAG, "UDP ready → RPi=" TARGET_IP ":%d  CSI trigger=ICMP→" IPSTR,
+             TARGET_PORT, IP2STR(&ip.gw));
     return ESP_OK;
 }
 
@@ -144,8 +181,9 @@ static void send_task(void *arg)
                     block_raw, block_resp, block_heart);
         net_udp_send(&pkt, sizeof(pkt));
 
-        // 5. Dummy trigger → keeps gateway TX active → CSI callbacks fire regularly
-        net_dummy_send();
+        // 5. ICMP echo → gateway: the reply is an AP→STA frame that fires the
+        //    next CSI callback, sustaining the ~100 Hz fresh-frame cadence.
+        net_ping_send();
 
         // 6. Periodic diagnostics (checklist #3, #7)
         frames++;

@@ -11,7 +11,8 @@
 #define WIFI_PASSWORD       "YOUR_PASS"       // TODO: set before flash (do NOT commit the real value)
 #define TARGET_IP           "192.168.1.11"    // rohjinsan (노진산) — receiver host
 #define TARGET_PORT         5005
-#define DUMMY_TRIGGER_PORT  5006              // dummy UDP port on gateway (192.168.1.1)
+// CSI cadence is driven by ICMP echo to the gateway (see net.c net_ping_send);
+// the old closed-UDP-port dummy trigger was rate-limited to ~1/s and removed.
 
 // ─── Node identity ──────────────────────────────────────────────────────
 // Overridable at build time via -DNODE_ID=n (PlatformIO env node1..node5,
