@@ -142,3 +142,24 @@ pio device monitor -e node3 --port COM7      # 115200
 [ ] RPi :5005(방식B) 수신 확인
 [ ] 통과 시 git tag v0.1.0-field
 ```
+
+---
+
+## 부록 · 노트북 데스크 테스트 (RPi 없이)
+
+RPi 대신 노트북으로 패킷이 들어오는지 먼저 확인할 수 있다.
+
+1. **노트북을 ESP와 같은 2.4GHz WiFi**에 연결 (ESP32-S3는 5GHz 불가).
+2. 노트북 IP 확인: `ipconfig` → Wi-Fi 어댑터 IPv4 (예 `192.168.0.50`).
+3. `config.h`: `TARGET_IP`를 **노트북 IP**로. (포트 5005, node_id는 그대로 — 5노드가 한 포트로 보내고 node_id로 구분)
+4. 방화벽 인바운드 UDP 5005 허용:
+   ```powershell
+   New-NetFirewallRule -DisplayName "CSI 5005" -Direction Inbound -Protocol UDP -LocalPort 5005 -Action Allow
+   ```
+5. 리스너 실행:
+   ```powershell
+   python tools/udp_listener.py            # node/seq/rate/loss/rssi 출력
+   python tools/udp_listener.py --verbose  # amplitude 샘플까지
+   ```
+
+> 포트를 센서마다 바꾸지 않는다. ESP `TARGET_IP:5005` = 노트북 `0.0.0.0:5005` 한 쌍이면 5노드 전부 수신되고 `node_id`로 구분된다. 현장 전환은 `TARGET_IP`만 RPi로 바꾸면 끝.
